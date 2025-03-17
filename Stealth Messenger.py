@@ -63,9 +63,22 @@ def display_message(message):
     label.pack(padx=10, pady=10)
     
     app.message_window.update_idletasks()
-    width = label.winfo_reqwidth() + 20
-    height = label.winfo_reqheight() + 20
-    app.message_window.geometry(f"{width}x{height}+{app.msg_x}+{app.msg_y}")
+    message_width = label.winfo_reqwidth() + 20
+    message_height = label.winfo_reqheight() + 20
+
+    # Get monitor details
+    monitors = get_monitors()
+    primary_monitor = monitors[0]
+    primary_width = primary_monitor.width
+    primary_height = primary_monitor.height
+
+    # Adjust position if it exceeds the screen boundaries
+    max_x = primary_width - message_width
+    max_y = primary_height - message_height
+    app.msg_x = max(0, min(app.msg_x, max_x))
+    app.msg_y = max(0, min(app.msg_y, max_y))
+
+    app.message_window.geometry(f"{message_width}x{message_height}+{app.msg_x}+{app.msg_y}")
     
     hwnd = ctypes.windll.user32.GetParent(app.message_window.winfo_id())
     style = ctypes.windll.user32.GetWindowLongW(hwnd, -20)
