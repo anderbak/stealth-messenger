@@ -163,6 +163,7 @@ def stop_video():
     app.capture_frame_button.config(state=tk.DISABLED)
 
 def capture_frame():
+    app.input_entry_var.set("")
     selected_device = app.video_device_var.get()
     if selected_device == "No camera available":
         messagebox.showerror("Error", "No camera available to capture frames.")
@@ -526,6 +527,8 @@ def run_query():
         if not ocr_text:
             messagebox.showerror("Error", "No text available in the OCR textbox.")
             return
+        
+        app.api_status_var.set("OpenAI API Status: Running query")
 
         app.ocr_texts[app.current_frame_index] = ocr_text
 
@@ -534,10 +537,13 @@ def run_query():
         if query_answer:
             app.input_entry_var.set(query_answer)
             app.query_answers.append(query_answer)
+            app.api_status_var.set("OpenAI API Status: Idle")
         else:
             messagebox.showerror("Error", "Failed to get a response from OpenAI.")
+            app.api_status_var.set("OpenAI API Status: Idle")
     else:
         messagebox.showinfo("Info", "No valid frame selected for rerunning the query.")
+        app.api_status_var.set("OpenAI API Status: Idle")
 
 def open_input_window():
     input_window = tk.Tk()
