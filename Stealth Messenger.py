@@ -689,6 +689,14 @@ def open_input_window():
     app.close_message_window_button.pack(side=tk.LEFT, padx=5)
     app.close_message_window_button.state(["disabled"])
 
+    settings_button = ttk.Button(controls_frame, text="Settings", command=open_settings_window)
+    settings_button.pack(pady=10)
+
+    # Add the dummy frame below the settings button
+    dummy_frame = ttk.Frame(controls_frame, height=100, width=200, relief="solid", borderwidth=1)
+    dummy_frame.pack(fill="x", padx=10, pady=10)
+    ttk.Label(dummy_frame, text="Dummy Frame", anchor="center").pack(pady=10)
+
     move_frame = ttk.LabelFrame(controls_frame, text="Message Window")
     move_frame.pack(pady=5, padx=10, anchor="center")
 
