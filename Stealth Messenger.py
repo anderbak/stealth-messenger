@@ -488,7 +488,7 @@ def open_input_window():
     controls_frame.pack(side=tk.LEFT, fill="both", expand=True, padx=10, pady=10)
 
     image_frame = ttk.Frame(main_frame)
-    image_frame.pack(side=tk.RIGHT, fill="both", expand=True, padx=10, pady=10)
+    image_frame.pack(side=tk.RIGHT, fill="both", expand=True, padx=2, pady=2)
 
     message_frame = ttk.Frame(controls_frame)
     message_frame.pack(fill="x", padx=10, pady=5)
