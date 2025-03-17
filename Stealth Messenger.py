@@ -451,6 +451,7 @@ def open_settings_window():
     settings_window.title("Settings")
     settings_window.geometry("1000x800")
     settings_window.resizable(False, False)
+    settings_window.grab_set()
 
     api_key_frame = ttk.Frame(settings_window)
     api_key_frame.pack(anchor="w", padx=10, pady=5, fill="x")
