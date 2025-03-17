@@ -185,7 +185,11 @@ def capture_frame():
             load_image_from_index()
 
             def process_and_update_status():
-                process_frame_in_background(app.frame_filename)
+                # Perform OCR in the background
+                extracted_text = perform_local_ocr(app.frame_filename)
+                if extracted_text:
+                    # Update the OCR text display after OCR is complete
+                    update_ocr_text_display()
                 app.api_status_var.set("OpenAI API Status: Idle")
 
             threading.Thread(target=process_and_update_status, daemon=True).start()
