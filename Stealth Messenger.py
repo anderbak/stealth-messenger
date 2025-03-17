@@ -373,29 +373,29 @@ def update_video_device_dropdown():
 
     threading.Thread(target=enumerate_and_update, daemon=True).start()
 
-def open_prompt_window():
-    prompt_window = tk.Toplevel()
-    prompt_window.title("Set prompt")
-    prompt_window.geometry("500x400")
+# def open_prompt_window():
+#     prompt_window = tk.Toplevel()
+#     prompt_window.title("Set prompt")
+#     prompt_window.geometry("500x400")
 
-    ttk.Label(prompt_window, text="Image Prompt:", font=("Arial", 10)).pack(pady=(10, 0), anchor="w", padx=10)
-    image_prompt_text = tk.Text(prompt_window, height=5, wrap="word")
-    image_prompt_text.pack(fill="both", expand=True, padx=10, pady=5)
-    image_prompt_text.insert("1.0", app.saved_image_prompt)
+#     ttk.Label(prompt_window, text="Image Prompt:", font=("Arial", 10)).pack(pady=(10, 0), anchor="w", padx=10)
+#     image_prompt_text = tk.Text(prompt_window, height=5, wrap="word")
+#     image_prompt_text.pack(fill="both", expand=True, padx=10, pady=5)
+#     image_prompt_text.insert("1.0", app.saved_image_prompt)
 
-    ttk.Label(prompt_window, text="Query text:", font=("Arial", 10)).pack(pady=(10, 0), anchor="w", padx=10)
-    query_text = tk.Text(prompt_window, height=5, wrap="word")
-    query_text.pack(fill="both", expand=True, padx=10, pady=5)
-    query_text.insert("1.0", app.saved_prompt)
+#     ttk.Label(prompt_window, text="Query text:", font=("Arial", 10)).pack(pady=(10, 0), anchor="w", padx=10)
+#     query_text = tk.Text(prompt_window, height=5, wrap="word")
+#     query_text.pack(fill="both", expand=True, padx=10, pady=5)
+#     query_text.insert("1.0", app.saved_prompt)
 
-    def save_prompt():
-        app.saved_image_prompt = image_prompt_text.get("1.0", "end").strip()
-        app.saved_prompt = query_text.get("1.0", "end").strip()
+#     def save_prompt():
+#         app.saved_image_prompt = image_prompt_text.get("1.0", "end").strip()
+#         app.saved_prompt = query_text.get("1.0", "end").strip()
 
-        prompt_window.destroy()
+#         prompt_window.destroy()
 
-    save_button = ttk.Button(prompt_window, text="Save", command=save_prompt)
-    save_button.pack(pady=10)
+#     save_button = ttk.Button(prompt_window, text="Save", command=save_prompt)
+#     save_button.pack(pady=10)
 
 def open_settings_window():
     settings_window = tk.Toplevel()
