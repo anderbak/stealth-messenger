@@ -14,6 +14,7 @@ from PIL import Image, ImageTk
 from openai import OpenAI
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import pytesseract
+from screeninfo import get_monitors
 
 class StealthMessenger:
     def __init__(self):
@@ -129,6 +130,16 @@ def start_video():
     if app.video_process:
         messagebox.showinfo("Info", "FFplay is already running.")
         return
+
+    # Get monitor details
+    monitors = get_monitors()
+    if len(monitors) > 1:
+        secondary_monitor = monitors[1]  # Get the second monitor
+        secondary_width = secondary_monitor.width
+        secondary_height = secondary_monitor.height
+        print(f"Secondary monitor resolution: {secondary_width}x{secondary_height}")
+    else:
+        print("No secondary monitor detected.")
 
     selected_device = app.video_device_var.get()
 
@@ -546,9 +557,16 @@ def run_query():
         app.api_status_var.set("Status: Idle")
 
 def open_input_window():
+    monitors = get_monitors()
+    num_screens = len(monitors)
+    primary_screen_width = monitors[0].width if monitors else 0
+
+    print(f"Number of screens: {num_screens}")
+    print(f"Primary screen width: {primary_screen_width}")
+
     input_window = tk.Tk()
     input_window.title("Stealth Messenger")
-    input_window.geometry("1190x595+200+100")
+    input_window.geometry("1200x600+200+100")
     input_window.resizable(False, False)
 
     style = ttk.Style()
