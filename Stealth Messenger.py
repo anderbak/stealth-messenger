@@ -30,6 +30,7 @@ class StealthMessenger:
         self.capture_frame_button = None
         self.frame_filename = None
         self.captured_frames = []  # Store captured frame filenames
+        self.ocr_texts = []  # Add this attribute to store OCR text for each frame
         self.current_frame_index = -1  # Track the current frame index
         self.SAVE_FOLDER = os.path.join(tempfile.gettempdir(), "captured_frames")
         os.makedirs(self.SAVE_FOLDER, exist_ok=True)
@@ -213,10 +214,9 @@ def perform_local_ocr(image_path):
         ocr_text = pytesseract.image_to_string(img)
 
         if not ocr_text.strip():
-            ocr_text = "The answer is C"
+            ocr_text = "No text detected."
 
-        print("OCR Output:")
-        print(ocr_text)
+        app.ocr_texts.append(ocr_text.strip())
 
         return ocr_text.strip()
         
@@ -327,7 +327,6 @@ def openai_query(ocr_text):
         )
 
         query_response = response.choices[0].message.content.strip()
-        print(f"Anser returned from OpenAI API:\n{query_response}")
         return query_response
 
     except Exception as e:
