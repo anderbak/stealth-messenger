@@ -29,6 +29,7 @@ class StealthMessenger:
         self.stop_video_button = None
         self.capture_frame_button = None
         self.frame_filename = None
+        self.captured_frames = []  # Add this attribute to store captured frame filenames
         self.SAVE_FOLDER = os.path.join(tempfile.gettempdir(), "captured_frames")
         os.makedirs(self.SAVE_FOLDER, exist_ok=True)
         self.RESOURCE_FILES = None
@@ -177,6 +178,7 @@ def capture_frame():
         subprocess.run(ffmpeg_command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
         if os.path.exists(app.frame_filename):
+            app.captured_frames.append(app.frame_filename)  # Append the captured frame filename to the list
             load_image()
 
             def process_and_update_status():
