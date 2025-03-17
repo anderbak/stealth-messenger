@@ -553,10 +553,6 @@ def open_input_window():
     button_frame = ttk.Frame(controls_frame)
     button_frame.pack(pady=5)
 
-    app.capture_frame_button = ttk.Button(button_frame, text="Capture Frame", command=capture_frame, width=16)
-    app.capture_frame_button.pack(side=tk.LEFT, padx=5)
-    app.capture_frame_button.state(["disabled"])
-
     ttk.Button(button_frame, text="Send", command=submit_message, width=16).pack(side=tk.LEFT, padx=5)
 
     app.close_message_window_button = ttk.Button(button_frame, text="Close", command=close_message_window, width=16)
