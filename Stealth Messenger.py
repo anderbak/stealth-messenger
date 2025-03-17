@@ -18,33 +18,33 @@ from screeninfo import get_monitors
 
 class StealthMessenger:
     def __init__(self):
-        self.message_window = None
-        self.bg_color = 'white'
-        self.fg_color = 'black'
         self.msg_x, self.msg_y = 250, 250
         self.font_size = 14
         self.alpha_value = 0.05
+        self.current_frame_index = -1
+        self.saved_image_prompt = ""
+        self.saved_prompt = ""
+        self.bg_color = 'white'
+        self.fg_color = 'black'
+        self.message_window = None
         self.close_message_window_button = None
         self.video_process = None
         self.start_video_button = None
         self.stop_video_button = None
         self.capture_frame_button = None
         self.frame_filename = None
-        self.captured_frames = []  # Store captured frame filenames
-        self.ocr_texts = []  # Add this attribute to store OCR text for each frame
-        self.current_frame_index = -1  # Track the current frame index
-        self.SAVE_FOLDER = os.path.join(tempfile.gettempdir(), "captured_frames")
-        os.makedirs(self.SAVE_FOLDER, exist_ok=True)
         self.RESOURCE_FILES = None
         self.API_KEY = None
         self.session_key = None
         self.encrypted_api_key = None
         self.nonce = None
-        self.saved_image_prompt = ""
-        self.saved_prompt = ""
         self.video_device_var = None
         self.video_device_dropdown = None
-        self.query_answers = []  # Add this attribute to store query answers
+        self.captured_frames = []
+        self.ocr_texts = []
+        self.query_answers = []
+        self.SAVE_FOLDER = os.path.join(tempfile.gettempdir(), "captured_frames")
+        os.makedirs(self.SAVE_FOLDER, exist_ok=True)
 
 app = StealthMessenger()
 
@@ -556,6 +556,29 @@ def run_query():
         messagebox.showinfo("Info", "No valid frame selected for rerunning the query.")
         app.api_status_var.set("Status: Idle")
 
+def monitor_connection_listener(callback, poll_interval=1):
+    previous_monitors = get_monitors()
+
+    def get_monitor_ids(monitors):
+        return {(monitor.width, monitor.height, monitor.x, monitor.y) for monitor in monitors}
+
+    previous_monitor_ids = get_monitor_ids(previous_monitors)
+
+    while True:
+        time.sleep(poll_interval)
+        current_monitors = get_monitors()
+        current_monitor_ids = get_monitor_ids(current_monitors)
+
+        if current_monitor_ids != previous_monitor_ids:
+            if len(current_monitor_ids) > len(previous_monitor_ids):
+                callback(current_monitors)
+            previous_monitor_ids = current_monitor_ids
+
+def on_new_monitor_detected(monitors):
+    print("New monitor detected!")
+    for monitor in monitors:
+        print(f"Monitor: {monitor.width}x{monitor.height} at ({monitor.x}, {monitor.y})")
+
 def open_input_window():
     monitors = get_monitors()
     num_screens = len(monitors)
@@ -683,5 +706,7 @@ def open_input_window():
     update_navigation_buttons()
 
     input_window.mainloop()
+
+threading.Thread(target=monitor_connection_listener, args=(on_new_monitor_detected,), daemon=True).start()
 
 open_input_window()
