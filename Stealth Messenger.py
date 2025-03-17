@@ -500,6 +500,25 @@ def open_settings_window():
 
     threading.Thread(target=update_video_device_dropdown, daemon=True).start()
 
+def rerun_query():
+    if 0 <= app.current_frame_index < len(app.ocr_texts):
+        ocr_text = app.ocr_textbox.get("1.0", tk.END).strip()
+
+        if not ocr_text:
+            messagebox.showerror("Error", "No text available in the OCR textbox.")
+            return
+
+        app.ocr_texts[app.current_frame_index] = ocr_text
+
+        query_answer = openai_query(ocr_text)
+
+        if query_answer:
+            app.input_entry_var.set(query_answer)
+        else:
+            messagebox.showerror("Error", "Failed to get a response from OpenAI.")
+    else:
+        messagebox.showinfo("Info", "No valid frame selected for rerunning the query.")
+
 def open_input_window():
     input_window = tk.Tk()
     input_window.title("Stealth Messenger")
@@ -586,18 +605,16 @@ def open_input_window():
     app.image_label = tk.Label(image_frame, text="No Image Loaded", bg="gray")
     app.image_label.pack(fill="both", expand=True, padx=10, pady=10)
 
-    # Navigation buttons for Back, Next, and Rerun
     navigation_frame = ttk.Frame(image_frame)
     navigation_frame.pack(fill="x", pady=(5, 0))
 
     ttk.Button(navigation_frame, text="Back", command=show_previous_image).pack(side=tk.LEFT, padx=5, pady=5)
-    ttk.Button(navigation_frame, text="Next", command=show_next_image).pack(side=tk.LEFT, padx=5, pady=5)
-    ttk.Button(navigation_frame, text="Rerun", command=lambda: None).pack(side=tk.RIGHT, padx=5, pady=5)  # Dummy button
+    ttk.Button(navigation_frame, text="Rerun", command=rerun_query).pack(side=tk.LEFT, padx=5, pady=5)  # Updated command
+    ttk.Button(navigation_frame, text="Next", command=show_next_image).pack(side=tk.RIGHT, padx=5, pady=5)
 
-    # Multiline textbox for OCR text display
     app.ocr_textbox = tk.Text(image_frame, height=10, wrap="word", font=("Arial", 10))
     app.ocr_textbox.pack(fill="x", padx=10, pady=(5, 10))
-    app.ocr_textbox.insert("1.0", "No OCR text available.")  # Default text
+    app.ocr_textbox.insert("1.0", "No OCR text available.")
 
     input_window.mainloop()
 
