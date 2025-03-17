@@ -523,7 +523,7 @@ def open_input_window():
     input_window = tk.Tk()
     input_window.title("Stealth Messenger")
     #input_window.geometry("1208x420+200+100")
-    input_window.geometry("1208x720+200+100")
+    input_window.geometry("1208x520+200+100")
     input_window.resizable(False, False)
     #input_window.attributes('-topmost', True)
 
