@@ -632,7 +632,7 @@ def open_input_window():
 
     app.api_status_var = tk.StringVar(value="Status: Idle")
     api_status_label = ttk.Label(navigation_frame, textvariable=app.api_status_var, font=("Arial", 10), foreground="gray")
-    api_status_label.pack(side=tk.LEFT, padx=5, pady=5)
+    api_status_label.pack(side=tk.LEFT, padx=10, pady=5)
 
     app.capture_frame_button = ttk.Button(navigation_frame, text="Capture Frame", command=capture_frame)
     app.capture_frame_button.pack(side=tk.RIGHT, padx=5, pady=5)
