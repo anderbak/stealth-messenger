@@ -548,7 +548,7 @@ def run_query():
 def open_input_window():
     input_window = tk.Tk()
     input_window.title("Stealth Messenger")
-    input_window.geometry("1208x600+200+100")
+    input_window.geometry("1200x600+200+100")
     input_window.resizable(False, False)
     #input_window.attributes('-topmost', True)
 
