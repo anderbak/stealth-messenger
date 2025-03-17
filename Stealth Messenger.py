@@ -633,6 +633,12 @@ def open_input_window():
     app.alpha_value_label = ttk.Label(move_frame, text=f"Alpha: {int(app.alpha_value * 100)}%", width=9, anchor="center", justify="center")
     app.alpha_value_label.grid(row=1, column=4, padx=2, pady=2, sticky="ew")
 
+    # Add radio buttons for Primary and Secondary monitors
+    monitor_var = tk.StringVar(value="primary")  # Default to "primary"
+
+    ttk.Radiobutton(move_frame, text="Primary", variable=monitor_var, value="primary").grid(row=3, column=0, padx=5, pady=5, sticky="w")
+    ttk.Radiobutton(move_frame, text="Secondary", variable=monitor_var, value="secondary").grid(row=3, column=1, padx=5, pady=5, sticky="w")
+
     settings_button = ttk.Button(controls_frame, text="Settings", command=open_settings_window)
     settings_button.pack(pady=10)
 
