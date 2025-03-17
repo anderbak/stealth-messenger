@@ -591,8 +591,8 @@ def open_input_window():
     navigation_frame.pack(fill="x", pady=(5, 0))
 
     ttk.Button(navigation_frame, text="Back", command=show_previous_image).pack(side=tk.LEFT, padx=5, pady=5)
-    ttk.Button(navigation_frame, text="Rerun", command=lambda: None).pack(side=tk.CENTER, padx=5, pady=5)  # Dummy button
-    ttk.Button(navigation_frame, text="Next", command=show_next_image).pack(side=tk.RIGHT, padx=5, pady=5)
+    ttk.Button(navigation_frame, text="Next", command=show_next_image).pack(side=tk.LEFT, padx=5, pady=5)
+    ttk.Button(navigation_frame, text="Rerun", command=lambda: None).pack(side=tk.RIGHT, padx=5, pady=5)  # Dummy button
 
     # Multiline textbox for OCR text display
     app.ocr_textbox = tk.Text(image_frame, height=10, wrap="word", font=("Arial", 10))
