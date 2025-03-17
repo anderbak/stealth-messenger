@@ -178,7 +178,7 @@ def capture_frame():
     ]
 
     try:
-        app.api_status_var.set("OpenAI API Status: Capturing frame")
+        app.api_status_var.set("Status: Capturing frame")
         subprocess.run(ffmpeg_command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
         if os.path.exists(app.frame_filename):
@@ -189,19 +189,19 @@ def capture_frame():
 
             def process_and_update_status():
                 process_frame_in_background(app.frame_filename)
-                app.api_status_var.set("OpenAI API Status: Idle")
+                app.api_status_var.set("Status: Idle")
 
             threading.Thread(target=process_and_update_status, daemon=True).start()
         else:
             messagebox.showerror("Error", "FFmpeg did not save the frame.")
-            app.api_status_var.set("OpenAI API Status: Idle")
+            app.api_status_var.set("Status: Idle")
 
     except subprocess.CalledProcessError as e:
         messagebox.showerror("Error", f"Failed to capture frame: {e}")
-        app.api_status_var.set("OpenAI API Status: Idle")
+        app.api_status_var.set("Status: Idle")
 
 def process_frame_in_background(image_path):
-    app.api_status_var.set("OpenAI API Status: Performing OCR")
+    app.api_status_var.set("Status: Performing OCR")
     extracted_text = perform_local_ocr(image_path)
 
     if extracted_text:
@@ -353,7 +353,7 @@ def openai_query(ocr_text):
         prompt += f"\n\n**Reference Material:**\n{resources_text}"
 
     try:
-        app.api_status_var.set("OpenAI API Status: Running query")
+        app.api_status_var.set("Status: Running query")
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[{"role": "user", "content": prompt}],
@@ -528,7 +528,7 @@ def run_query():
             messagebox.showerror("Error", "No text available in the OCR textbox.")
             return
         
-        app.api_status_var.set("OpenAI API Status: Running query")
+        app.api_status_var.set("Status: Running query")
 
         app.ocr_texts[app.current_frame_index] = ocr_text
 
@@ -537,13 +537,13 @@ def run_query():
         if query_answer:
             app.input_entry_var.set(query_answer)
             app.query_answers.append(query_answer)
-            app.api_status_var.set("OpenAI API Status: Idle")
+            app.api_status_var.set("Status: Idle")
         else:
             messagebox.showerror("Error", "Failed to get a response from OpenAI.")
-            app.api_status_var.set("OpenAI API Status: Idle")
+            app.api_status_var.set("Status: Idle")
     else:
         messagebox.showinfo("Info", "No valid frame selected for rerunning the query.")
-        app.api_status_var.set("OpenAI API Status: Idle")
+        app.api_status_var.set("Status: Idle")
 
 def open_input_window():
     input_window = tk.Tk()
@@ -630,12 +630,12 @@ def open_input_window():
     app.next_button = ttk.Button(navigation_frame, text="Next", command=show_next_image)
     app.next_button.pack(side=tk.LEFT, padx=5, pady=5)
 
-    app.api_status_var = tk.StringVar(value="OpenAI API Status: Idle")
+    app.api_status_var = tk.StringVar(value="Status: Idle")
     api_status_label = ttk.Label(navigation_frame, textvariable=app.api_status_var, font=("Arial", 10), foreground="gray")
     api_status_label.pack(side=tk.LEFT, padx=5, pady=5)
 
     app.capture_frame_button = ttk.Button(navigation_frame, text="Capture Frame", command=capture_frame)
-    app.capture_frame_button.pack(side=tk.LEFT, padx=5, pady=5)
+    app.capture_frame_button.pack(side=tk.RIGHT, padx=5, pady=5)
 
     app.query_button = ttk.Button(navigation_frame, text="Query", command=run_query)
     app.query_button.pack(side=tk.RIGHT, padx=5, pady=5)
