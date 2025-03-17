@@ -180,8 +180,8 @@ def capture_frame():
         subprocess.run(ffmpeg_command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
         if os.path.exists(app.frame_filename):
-            app.captured_frames.append(app.frame_filename)  # Append the captured frame filename to the list
-            app.current_frame_index = len(app.captured_frames) - 1  # Update the current frame index
+            app.captured_frames.append(app.frame_filename)
+            app.current_frame_index = len(app.captured_frames) - 1
             load_image_from_index()
 
             def process_and_update_status():
@@ -204,8 +204,8 @@ def process_frame_in_background(image_path):
     if extracted_text:
         update_ocr_text_display()
 
-        query_answer = openai_query(extracted_text)
-        app.input_entry_var.set(query_answer)
+        #query_answer = openai_query(extracted_text)
+        #app.input_entry_var.set(query_answer)
 
 def perform_local_ocr(image_path):
     try:
@@ -251,7 +251,6 @@ def load_image_from_index():
     update_ocr_text_display()
 
 def update_ocr_text_display():
-    """Update the OCR text display based on the current frame index."""
     if 0 <= app.current_frame_index < len(app.ocr_texts):
         ocr_text = app.ocr_texts[app.current_frame_index]
     else:
@@ -261,7 +260,6 @@ def update_ocr_text_display():
     app.ocr_textbox.insert("1.0", ocr_text)
 
 def show_previous_image():
-    """Show the previous image in the captured_frames array."""
     if app.current_frame_index > 0:
         app.current_frame_index -= 1
         load_image_from_index()
@@ -269,7 +267,6 @@ def show_previous_image():
         messagebox.showinfo("Info", "No previous image available.")
 
 def show_next_image():
-    """Show the next image in the captured_frames array."""
     if app.current_frame_index < len(app.captured_frames) - 1:
         app.current_frame_index += 1
         load_image_from_index()
@@ -302,18 +299,17 @@ def select_files():
     )
 
     if file_paths:
-        return file_paths  # You can now use this list for further processing
+        return file_paths
     else:
         return []
 
 def load_resources():
     if not app.RESOURCE_FILES:
-        #messagebox.showerror("Error", "Please select a resource folder first.")
         return ""
     
     combined_text = ""
     for file in os.listdir(app.RESOURCE_FILES):
-        if file.endswith(".txt"):  # Ensure we only read text files
+        if file.endswith(".txt"):
             with open(os.path.join(app.RESOURCE_FILES, file), "r", encoding="utf-8") as f:
                 combined_text += f.read() + "\n\n"
     return combined_text
@@ -500,7 +496,7 @@ def open_settings_window():
 
     threading.Thread(target=update_video_device_dropdown, daemon=True).start()
 
-def rerun_query():
+def run_query():
     if 0 <= app.current_frame_index < len(app.ocr_texts):
         ocr_text = app.ocr_textbox.get("1.0", tk.END).strip()
 
@@ -522,7 +518,6 @@ def rerun_query():
 def open_input_window():
     input_window = tk.Tk()
     input_window.title("Stealth Messenger")
-    #input_window.geometry("1208x420+200+100")
     input_window.geometry("1208x600+200+100")
     input_window.resizable(False, False)
     #input_window.attributes('-topmost', True)
@@ -610,7 +605,7 @@ def open_input_window():
 
     ttk.Button(navigation_frame, text="Back", command=show_previous_image).pack(side=tk.LEFT, padx=5, pady=5)
     ttk.Button(navigation_frame, text="Next", command=show_next_image).pack(side=tk.LEFT, padx=5, pady=5)
-    ttk.Button(navigation_frame, text="Rerun", command=rerun_query).pack(side=tk.RIGHT, padx=5, pady=5) 
+    ttk.Button(navigation_frame, text="Rerun", command=run_query).pack(side=tk.RIGHT, padx=5, pady=5) 
     
     app.ocr_textbox = tk.Text(image_frame, height=10, wrap="word", font=("Arial", 10))
     app.ocr_textbox.pack(fill="x", padx=10, pady=(5, 10))
