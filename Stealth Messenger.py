@@ -247,7 +247,7 @@ def load_image_from_index():
     else:
         app.image_label.config(image="", text="No Image Loaded")
         app.image_label.image = None
-        update_ocr_text_display()
+    update_ocr_text_display()
 
 def update_ocr_text_display():
     """Update the OCR text display based on the current frame index."""
@@ -502,10 +502,10 @@ def open_settings_window():
 def open_input_window():
     input_window = tk.Tk()
     input_window.title("Stealth Messenger")
-#input_window.geometry("1208x420+200+100")
+    #input_window.geometry("1208x420+200+100")
     input_window.geometry("1208x820+200+100")
     input_window.resizable(False, False)
-#input_window.attributes('-topmost', True)
+    #input_window.attributes('-topmost', True)
 
     style = ttk.Style()
     style.configure("TButton", font=("Roboto", 10), padding=5)
