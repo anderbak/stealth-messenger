@@ -609,8 +609,8 @@ def open_input_window():
     navigation_frame.pack(fill="x", pady=(5, 0))
 
     ttk.Button(navigation_frame, text="Back", command=show_previous_image).pack(side=tk.LEFT, padx=5, pady=5)
-    ttk.Button(navigation_frame, text="Next", command=show_next_image).pack(side=tk.RIGHT, padx=5, pady=5)
-    ttk.Button(navigation_frame, text="Rerun", command=rerun_query).pack(side=tk.LEFT, padx=5, pady=5) 
+    ttk.Button(navigation_frame, text="Next", command=show_next_image).pack(side=tk.LEFT, padx=5, pady=5)
+    ttk.Button(navigation_frame, text="Rerun", command=rerun_query).pack(side=tk.RIGHT, padx=5, pady=5) 
     
     app.ocr_textbox = tk.Text(image_frame, height=10, wrap="word", font=("Arial", 10))
     app.ocr_textbox.pack(fill="x", padx=10, pady=(5, 10))
