@@ -554,6 +554,13 @@ def open_input_window():
     app.image_label = tk.Label(image_frame, text="No Image Loaded", width=634, height=356, bg="gray")
     app.image_label.pack(fill="both", expand=True, padx=10, pady=10)
 
+     # New section for Back and Next buttons
+    navigation_frame = ttk.Frame(image_frame)
+    navigation_frame.pack(fill="x", pady=(10, 0))
+
+    ttk.Button(navigation_frame, text="Back", command=lambda: print("Back button clicked")).pack(side=tk.LEFT, padx=5)
+    ttk.Button(navigation_frame, text="Next", command=lambda: print("Next button clicked")).pack(side=tk.RIGHT, padx=5)
+
     input_window.mainloop()
 
 open_input_window()
