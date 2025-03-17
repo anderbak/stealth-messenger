@@ -93,12 +93,38 @@ def update_message_window():
     if app.message_window:
         display_message(app.message_window.children['!label'].cget("text"))
 
-def move_message(dx, dy):
-    app.msg_x += dx
-    app.msg_y += dy
+def move_message(dx, dy, monitor_var):
+    monitor_var_value = monitor_var.get()  # Get the selected monitor (primary/secondary)
+    monitors = get_monitors()
+    
+    if not monitors:
+        return  # No monitors detected, exit early
 
-    app.position_label.config(text=f"{app.msg_x}:{app.msg_y}")
+    primary_monitor = monitors[0]
+    primary_width = primary_monitor.width
+    primary_height = primary_monitor.height
 
+    if monitor_var_value == "primary":
+        # Primary monitor logic
+        app.msg_x = max(0, min(app.msg_x + dx, primary_width))
+        app.msg_y = max(0, min(app.msg_y + dy, primary_height))
+        display_x, display_y = app.msg_x, app.msg_y
+    elif monitor_var_value == "secondary" and len(monitors) > 1:
+        # Secondary monitor logic
+        secondary_monitor = monitors[1]
+        secondary_width = secondary_monitor.width
+        secondary_height = secondary_monitor.height
+
+        app.msg_x = max(primary_width, min(app.msg_x + dx, primary_width + secondary_width))
+        app.msg_y = max(0, min(app.msg_y + dy, secondary_height))
+        display_x, display_y = app.msg_x - primary_width, app.msg_y
+    else:
+        return  # No secondary monitor available, exit early
+
+    # Update the position label in the input window
+    app.position_label.config(text=f"{display_x}:{display_y}")
+
+    # Update the geometry of the message window
     if app.message_window is not None:
         app.message_window.geometry(f"+{app.msg_x}+{app.msg_y}")
 
@@ -329,7 +355,7 @@ def load_image():
 def select_files():
     file_paths = filedialog.askopenfilenames(
         title="Select Files",
-        filetypes=[("All Files", "*.*"), ("Text Files", "*.txt"), ("Images", "*.png;*.jpg;*.jpeg"), ("PDF Files", "*.pdf")]
+        filetypes=[("All Files", "*.*"), ("Text Files", "*.txt"), ("PDF Files", "*.pdf")]
     )
 
     if file_paths:
@@ -575,9 +601,6 @@ def monitor_connection_listener(callback, poll_interval=1):
             previous_monitor_ids = current_monitor_ids
 
 def update_secondary_button_state():
-    """
-    Updates the state of the 'Secondary' button based on the number of connected monitors.
-    """
     monitors = get_monitors()
     num_screens = len(monitors)
 
@@ -586,7 +609,6 @@ def update_secondary_button_state():
     else:
         secondary_button.config(state=tk.DISABLED)
 
-# Modify the monitor connection listener callback
 def on_new_monitor_detected(monitors):
     print("New monitor detected!")
     for monitor in monitors:
@@ -650,10 +672,10 @@ def open_input_window():
     ttk.Radiobutton(move_frame, text="Light", variable=mode_var, value='light', command=lambda: set_mode('light')).grid(row=0, column=6, padx=5)
     ttk.Radiobutton(move_frame, text="Dark", variable=mode_var, value='dark', command=lambda: set_mode('dark')).grid(row=1, column=6, padx=5)
 
-    ttk.Button(move_frame, text="Up", command=lambda: move_message(0, -10), width=8).grid(row=0, column=2, pady=2)
-    ttk.Button(move_frame, text="Left", command=lambda: move_message(-10, 0), width=8).grid(row=1, column=0, padx=2)
-    ttk.Button(move_frame, text="Right", command=lambda: move_message(10, 0), width=8).grid(row=1, column=3, padx=2)
-    ttk.Button(move_frame, text="Down", command=lambda: move_message(0, 10), width=8).grid(row=2, column=2, pady=2)
+    ttk.Button(move_frame, text="Up", command=lambda: move_message(0, -10, monitor_var), width=8).grid(row=0, column=2, pady=2)
+    ttk.Button(move_frame, text="Left", command=lambda: move_message(-10, 0, monitor_var), width=8).grid(row=1, column=0, padx=2)
+    ttk.Button(move_frame, text="Right", command=lambda: move_message(10, 0, monitor_var), width=8).grid(row=1, column=3, padx=2)
+    ttk.Button(move_frame, text="Down", command=lambda: move_message(0, 10, monitor_var), width=8).grid(row=2, column=2, pady=2)
 
     app.position_label = ttk.Label(move_frame, text=f"{app.msg_x}:{app.msg_y}", width=8, anchor="center", justify="center")
     app.position_label.grid(row=1, column=2, padx=2, pady=2, sticky="ew")
@@ -670,22 +692,17 @@ def open_input_window():
     app.alpha_value_label = ttk.Label(move_frame, text=f"Alpha: {int(app.alpha_value * 100)}%", width=9, anchor="center", justify="center")
     app.alpha_value_label.grid(row=1, column=4, padx=2, pady=2, sticky="ew")
 
-    # Add radio buttons for Primary and Secondary monitors
-    monitor_var = tk.StringVar(value="primary")  # Default to "primary"
+    monitor_var = tk.StringVar(value="primary")
 
-    # Check the number of monitors
     monitors = get_monitors()
     num_screens = len(monitors)
 
-    # Create the Primary radio button
     ttk.Radiobutton(move_frame, text="Primary", variable=monitor_var, value="primary").grid(row=3, column=0, padx=5, pady=5, sticky="w")
 
-    # Create the Secondary radio button
     global secondary_button
     secondary_button = ttk.Radiobutton(move_frame, text="Secondary", variable=monitor_var, value="secondary")
     secondary_button.grid(row=3, column=1, padx=5, pady=5, sticky="w")
 
-    # Update the state of the Secondary button based on the number of monitors
     update_secondary_button_state()
 
     settings_button = ttk.Button(controls_frame, text="Settings", command=open_settings_window)
