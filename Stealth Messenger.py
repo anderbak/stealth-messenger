@@ -697,20 +697,20 @@ def open_input_window():
     navigation_frame = ttk.Frame(image_frame)
     navigation_frame.pack(fill="x", pady=(5, 0))
 
-    app.back_button = ttk.Button(navigation_frame, text="Back", command=show_previous_image)
+    app.back_button = ttk.Button(navigation_frame, text="Back", command=show_previous_image, width=10)
     app.back_button.pack(side=tk.LEFT, padx=5, pady=5)
 
-    app.next_button = ttk.Button(navigation_frame, text="Next", command=show_next_image)
+    app.next_button = ttk.Button(navigation_frame, text="Next", command=show_next_image, width=10)
     app.next_button.pack(side=tk.LEFT, padx=5, pady=5)
 
     app.api_status_var = tk.StringVar(value="Status: Idle")
     api_status_label = ttk.Label(navigation_frame, textvariable=app.api_status_var, font=("Arial", 10), foreground="gray")
     api_status_label.pack(side=tk.LEFT, padx=60, pady=5)
 
-    app.query_button = ttk.Button(navigation_frame, text="Query", command=run_query)
+    app.query_button = ttk.Button(navigation_frame, text="Query", command=run_query, width=10)
     app.query_button.pack(side=tk.RIGHT, padx=5, pady=5)
 
-    app.capture_frame_button = ttk.Button(navigation_frame, text="Capture", command=capture_frame)
+    app.capture_frame_button = ttk.Button(navigation_frame, text="Capture", command=capture_frame, width=10)
     app.capture_frame_button.pack(side=tk.RIGHT, padx=5, pady=5)
 
     app.capture_frame_button.state(["disabled"])
