@@ -709,8 +709,8 @@ def open_input_window():
 
     app.query_button = ttk.Button(navigation_frame, text="Query", command=run_query)
     app.query_button.pack(side=tk.RIGHT, padx=5, pady=5)
-    
-    app.capture_frame_button = ttk.Button(navigation_frame, text="Capture Frame", command=capture_frame)
+
+    app.capture_frame_button = ttk.Button(navigation_frame, text="Capture", command=capture_frame)
     app.capture_frame_button.pack(side=tk.RIGHT, padx=5, pady=5)
 
     app.capture_frame_button.state(["disabled"])
