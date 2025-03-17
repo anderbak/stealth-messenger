@@ -586,11 +586,12 @@ def open_input_window():
     app.image_label = tk.Label(image_frame, text="No Image Loaded", bg="gray")
     app.image_label.pack(fill="both", expand=True, padx=10, pady=10)
 
-    # Navigation buttons for Back and Next
+    # Navigation buttons for Back, Next, and Rerun
     navigation_frame = ttk.Frame(image_frame)
     navigation_frame.pack(fill="x", pady=(5, 0))
 
     ttk.Button(navigation_frame, text="Back", command=show_previous_image).pack(side=tk.LEFT, padx=5, pady=5)
+    ttk.Button(navigation_frame, text="Rerun", command=lambda: None).pack(padx=5, pady=5)  # Dummy button
     ttk.Button(navigation_frame, text="Next", command=show_next_image).pack(side=tk.RIGHT, padx=5, pady=5)
 
     # Multiline textbox for OCR text display
