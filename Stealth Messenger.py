@@ -43,6 +43,7 @@ class StealthMessenger:
         self.saved_prompt = ""
         self.video_device_var = None
         self.video_device_dropdown = None
+        self.query_answers = []  # Add this attribute to store query answers
 
 app = StealthMessenger()
 
@@ -183,6 +184,7 @@ def capture_frame():
             app.captured_frames.append(app.frame_filename)
             app.current_frame_index = len(app.captured_frames) - 1
             load_image_from_index()
+            update_navigation_buttons()
 
             def process_and_update_status():
                 process_frame_in_background(app.frame_filename)
@@ -204,9 +206,6 @@ def process_frame_in_background(image_path):
     if extracted_text:
         update_ocr_text_display()
 
-        #query_answer = openai_query(extracted_text)
-        #app.input_entry_var.set(query_answer)
-
 def perform_local_ocr(image_path):
     try:
         pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -226,13 +225,11 @@ def perform_local_ocr(image_path):
         return None
 
 def load_image_from_index():
-    """Load the image at the current index into the image label and update the OCR text display."""
     if 0 <= app.current_frame_index < len(app.captured_frames):
         try:
             frame_path = app.captured_frames[app.current_frame_index]
             img = Image.open(frame_path)
 
-            # Resize the image to fit the label
             new_size = (640, 360)
             img = img.resize(new_size, Image.Resampling.LANCZOS)
 
@@ -241,7 +238,6 @@ def load_image_from_index():
             app.image_label.config(image=img_tk, text="")
             app.image_label.image = img_tk
 
-            # Update the OCR text display
             update_ocr_text_display()
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load image: {e}")
@@ -259,19 +255,45 @@ def update_ocr_text_display():
     app.ocr_textbox.delete("1.0", tk.END)
     app.ocr_textbox.insert("1.0", ocr_text)
 
+def update_navigation_buttons():
+    if app.current_frame_index > 0:
+        app.back_button.config(state=tk.NORMAL)
+    else:
+        app.back_button.config(state=tk.DISABLED)
+
+    if app.current_frame_index < len(app.captured_frames) - 1:
+        app.next_button.config(state=tk.NORMAL)
+    else:
+        app.next_button.config(state=tk.DISABLED)
+
+    if 0 <= app.current_frame_index < len(app.captured_frames):
+        app.query_button.config(state=tk.NORMAL)
+    else:
+        app.query_button.config(state=tk.DISABLED)
+
 def show_previous_image():
     if app.current_frame_index > 0:
         app.current_frame_index -= 1
         load_image_from_index()
+        if 0 <= app.current_frame_index < len(app.query_answers):
+            app.input_entry_var.set(app.query_answers[app.current_frame_index])
+        else:
+            app.input_entry_var.set("")
     else:
         messagebox.showinfo("Info", "No previous image available.")
+    update_navigation_buttons()
 
 def show_next_image():
     if app.current_frame_index < len(app.captured_frames) - 1:
         app.current_frame_index += 1
         load_image_from_index()
+        if 0 <= app.current_frame_index < len(app.query_answers):
+            app.input_entry_var.set(app.query_answers[app.current_frame_index])
+        else:
+            app.input_entry_var.set("")
     else:
         messagebox.showinfo("Info", "No next image available.")
+    update_navigation_buttons()
 
 def load_image():
     try:
@@ -510,6 +532,7 @@ def run_query():
 
         if query_answer:
             app.input_entry_var.set(query_answer)
+            app.query_answers.append(query_answer)
         else:
             messagebox.showerror("Error", "Failed to get a response from OpenAI.")
     else:
@@ -559,9 +582,9 @@ def open_input_window():
     app.close_message_window_button.pack(side=tk.LEFT, padx=5)
     app.close_message_window_button.state(["disabled"])
 
-    app.api_status_var = tk.StringVar(value="OpenAI API Status: Idle")  # Default status
+    app.api_status_var = tk.StringVar(value="OpenAI API Status: Idle")
     api_status_label = ttk.Label(controls_frame, textvariable=app.api_status_var, font=("Arial", 10), foreground="gray")
-    api_status_label.pack(pady=(5, 0))  # Small padding below button frame
+    api_status_label.pack(pady=(5, 0))
 
     move_frame = ttk.LabelFrame(controls_frame, text="Message Window")
     move_frame.pack(pady=5, padx=10, anchor="center")
@@ -599,9 +622,15 @@ def open_input_window():
     navigation_frame = ttk.Frame(image_frame)
     navigation_frame.pack(fill="x", pady=(5, 0))
 
-    ttk.Button(navigation_frame, text="Back", command=show_previous_image).pack(side=tk.LEFT, padx=5, pady=5)
-    ttk.Button(navigation_frame, text="Next", command=show_next_image).pack(side=tk.LEFT, padx=5, pady=5)
-    ttk.Button(navigation_frame, text="Query", command=run_query).pack(side=tk.RIGHT, padx=5, pady=5)
+    app.back_button = ttk.Button(navigation_frame, text="Back", command=show_previous_image)
+    app.back_button.pack(side=tk.LEFT, padx=5, pady=5)
+
+    app.next_button = ttk.Button(navigation_frame, text="Next", command=show_next_image)
+    app.next_button.pack(side=tk.LEFT, padx=5, pady=5)
+
+    app.query_button = ttk.Button(navigation_frame, text="Query", command=run_query)
+    app.query_button.pack(side=tk.RIGHT, padx=5, pady=5)
+
     app.capture_frame_button = ttk.Button(navigation_frame, text="Capture Frame", command=capture_frame)
     app.capture_frame_button.pack(side=tk.RIGHT, padx=5, pady=5)
 
@@ -610,6 +639,8 @@ def open_input_window():
     app.ocr_textbox = tk.Text(image_frame, height=10, wrap="word", font=("Arial", 10))
     app.ocr_textbox.pack(fill="x", padx=10, pady=(5, 10))
     app.ocr_textbox.insert("1.0", "No OCR text available.")
+
+    update_navigation_buttons()
 
     input_window.mainloop()
 
