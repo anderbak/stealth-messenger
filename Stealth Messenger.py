@@ -557,7 +557,7 @@ def open_input_window():
 
     # New section for Back and Next buttons
     navigation_frame = ttk.Frame(image_frame)
-    navigation_frame.pack(fill="x", pady=(10, 0))  # Ensure it's placed below the image label
+    navigation_frame.pack(fill="x", pady=(5, 0))
 
     ttk.Button(navigation_frame, text="Back", command=lambda: print("Back button clicked")).pack(side=tk.LEFT, padx=5, pady=5)
     ttk.Button(navigation_frame, text="Next", command=lambda: print("Next button clicked")).pack(side=tk.RIGHT, padx=5, pady=5)
