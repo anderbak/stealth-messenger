@@ -550,7 +550,6 @@ def open_input_window():
     input_window.title("Stealth Messenger")
     input_window.geometry("1190x595+200+100")
     input_window.resizable(False, False)
-    #input_window.attributes('-topmost', True)
 
     style = ttk.Style()
     style.configure("TButton", font=("Roboto", 10), padding=5)
@@ -588,10 +587,6 @@ def open_input_window():
     app.close_message_window_button = ttk.Button(button_frame, text="Close", command=close_message_window, width=16)
     app.close_message_window_button.pack(side=tk.LEFT, padx=5)
     app.close_message_window_button.state(["disabled"])
-
-    app.api_status_var = tk.StringVar(value="OpenAI API Status: Idle")
-    api_status_label = ttk.Label(controls_frame, textvariable=app.api_status_var, font=("Arial", 10), foreground="gray")
-    api_status_label.pack(pady=(5, 0))
 
     move_frame = ttk.LabelFrame(controls_frame, text="Message Window")
     move_frame.pack(pady=5, padx=10, anchor="center")
@@ -635,11 +630,15 @@ def open_input_window():
     app.next_button = ttk.Button(navigation_frame, text="Next", command=show_next_image)
     app.next_button.pack(side=tk.LEFT, padx=5, pady=5)
 
-    app.query_button = ttk.Button(navigation_frame, text="Query", command=run_query)
-    app.query_button.pack(side=tk.RIGHT, padx=5, pady=5)
+    app.api_status_var = tk.StringVar(value="OpenAI API Status: Idle")
+    api_status_label = ttk.Label(navigation_frame, textvariable=app.api_status_var, font=("Arial", 10), foreground="gray")
+    api_status_label.pack(side=tk.LEFT, padx=5, pady=5)
 
     app.capture_frame_button = ttk.Button(navigation_frame, text="Capture Frame", command=capture_frame)
-    app.capture_frame_button.pack(side=tk.RIGHT, padx=5, pady=5)
+    app.capture_frame_button.pack(side=tk.LEFT, padx=5, pady=5)
+
+    app.query_button = ttk.Button(navigation_frame, text="Query", command=run_query)
+    app.query_button.pack(side=tk.RIGHT, padx=5, pady=5)
 
     app.capture_frame_button.state(["disabled"])
 
