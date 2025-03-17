@@ -104,10 +104,16 @@ def move_message(dx, dy, monitor_var):
     primary_width = primary_monitor.width
     primary_height = primary_monitor.height
 
+    # Get the message window's width and height
+    message_width = app.message_window.winfo_width() if app.message_window else 0
+    message_height = app.message_window.winfo_height() if app.message_window else 0
+
     if monitor_var_value == "primary":
         # Primary monitor logic
-        app.msg_x = max(0, min(app.msg_x + dx, primary_width))
-        app.msg_y = max(0, min(app.msg_y + dy, primary_height))
+        max_x = primary_width - message_width
+        max_y = primary_height - message_height
+        app.msg_x = max(0, min(app.msg_x + dx, max_x))
+        app.msg_y = max(0, min(app.msg_y + dy, max_y))
         display_x, display_y = app.msg_x, app.msg_y
     elif monitor_var_value == "secondary" and len(monitors) > 1:
         # Secondary monitor logic
@@ -115,8 +121,10 @@ def move_message(dx, dy, monitor_var):
         secondary_width = secondary_monitor.width
         secondary_height = secondary_monitor.height
 
-        app.msg_x = max(primary_width, min(app.msg_x + dx, primary_width + secondary_width))
-        app.msg_y = max(0, min(app.msg_y + dy, secondary_height))
+        max_x = primary_width + secondary_width - message_width
+        max_y = secondary_height - message_height
+        app.msg_x = max(primary_width, min(app.msg_x + dx, max_x))
+        app.msg_y = max(0, min(app.msg_y + dy, max_y))
         display_x, display_y = app.msg_x - primary_width, app.msg_y
     else:
         return  # No secondary monitor available, exit early
