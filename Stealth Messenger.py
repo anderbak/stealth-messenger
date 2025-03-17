@@ -225,7 +225,7 @@ def perform_local_ocr(image_path):
         return None
 
 def load_image_from_index():
-    """Load the image at the current index into the image label."""
+    """Load the image at the current index into the image label and update the OCR text display."""
     if 0 <= app.current_frame_index < len(app.captured_frames):
         try:
             frame_path = app.captured_frames[app.current_frame_index]
@@ -239,11 +239,25 @@ def load_image_from_index():
 
             app.image_label.config(image=img_tk, text="")
             app.image_label.image = img_tk
+
+            # Update the OCR text display
+            update_ocr_text_display()
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load image: {e}")
     else:
         app.image_label.config(image="", text="No Image Loaded")
         app.image_label.image = None
+        update_ocr_text_display()
+
+def update_ocr_text_display():
+    """Update the OCR text display based on the current frame index."""
+    if 0 <= app.current_frame_index < len(app.ocr_texts):
+        ocr_text = app.ocr_texts[app.current_frame_index]
+    else:
+        ocr_text = "No OCR text available."
+
+    app.ocr_textbox.delete("1.0", tk.END)
+    app.ocr_textbox.insert("1.0", ocr_text)
 
 def show_previous_image():
     """Show the previous image in the captured_frames array."""
@@ -488,10 +502,10 @@ def open_settings_window():
 def open_input_window():
     input_window = tk.Tk()
     input_window.title("Stealth Messenger")
-    #input_window.geometry("1208x420+200+100")
+#input_window.geometry("1208x420+200+100")
     input_window.geometry("1208x820+200+100")
     input_window.resizable(False, False)
-    #input_window.attributes('-topmost', True)
+#input_window.attributes('-topmost', True)
 
     style = ttk.Style()
     style.configure("TButton", font=("Roboto", 10), padding=5)
@@ -577,6 +591,11 @@ def open_input_window():
 
     ttk.Button(navigation_frame, text="Back", command=show_previous_image).pack(side=tk.LEFT, padx=5, pady=5)
     ttk.Button(navigation_frame, text="Next", command=show_next_image).pack(side=tk.RIGHT, padx=5, pady=5)
+
+    # Multiline textbox for OCR text display
+    app.ocr_textbox = tk.Text(image_frame, height=10, wrap="word", font=("Arial", 10))
+    app.ocr_textbox.pack(fill="x", padx=10, pady=(5, 10))
+    app.ocr_textbox.insert("1.0", "No OCR text available.")  # Default text
 
     input_window.mainloop()
 
