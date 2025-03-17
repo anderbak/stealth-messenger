@@ -552,12 +552,12 @@ def open_input_window():
     settings_button = ttk.Button(controls_frame, text="Settings", command=open_settings_window)
     settings_button.pack(pady=10)
 
-    app.image_label = tk.Label(image_frame, text="No Image Loaded", width=634, height=356, bg="gray")
+    app.image_label = tk.Label(image_frame, text="No Image Loaded", bg="gray")
     app.image_label.pack(fill="both", expand=True, padx=10, pady=10)
 
     # New section for Back and Next buttons
     navigation_frame = ttk.Frame(image_frame)
-    navigation_frame.pack(fill="x", pady=(10, 0), anchor="s")  # Ensure it's anchored at the bottom
+    navigation_frame.pack(fill="x", pady=(10, 0))  # Ensure it's placed below the image label
 
     ttk.Button(navigation_frame, text="Back", command=lambda: print("Back button clicked")).pack(side=tk.LEFT, padx=5, pady=5)
     ttk.Button(navigation_frame, text="Next", command=lambda: print("Next button clicked")).pack(side=tk.RIGHT, padx=5, pady=5)
