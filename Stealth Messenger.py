@@ -29,7 +29,8 @@ class StealthMessenger:
         self.stop_video_button = None
         self.capture_frame_button = None
         self.frame_filename = None
-        self.captured_frames = []  # Add this attribute to store captured frame filenames
+        self.captured_frames = []  # Store captured frame filenames
+        self.current_frame_index = -1  # Track the current frame index
         self.SAVE_FOLDER = os.path.join(tempfile.gettempdir(), "captured_frames")
         os.makedirs(self.SAVE_FOLDER, exist_ok=True)
         self.RESOURCE_FILES = None
@@ -179,7 +180,8 @@ def capture_frame():
 
         if os.path.exists(app.frame_filename):
             app.captured_frames.append(app.frame_filename)  # Append the captured frame filename to the list
-            load_image()
+            app.current_frame_index = len(app.captured_frames) - 1  # Update the current frame index
+            load_image_from_index()
 
             def process_and_update_status():
                 process_frame_in_background(app.frame_filename)
@@ -221,6 +223,43 @@ def perform_local_ocr(image_path):
     except Exception as e:
         messagebox.showerror("Error", f"Local OCR failed: {e}")
         return None
+
+def load_image_from_index():
+    """Load the image at the current index into the image label."""
+    if 0 <= app.current_frame_index < len(app.captured_frames):
+        try:
+            frame_path = app.captured_frames[app.current_frame_index]
+            img = Image.open(frame_path)
+
+            # Resize the image to fit the label
+            new_size = (640, 360)
+            img = img.resize(new_size, Image.Resampling.LANCZOS)
+
+            img_tk = ImageTk.PhotoImage(img)
+
+            app.image_label.config(image=img_tk, text="")
+            app.image_label.image = img_tk
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load image: {e}")
+    else:
+        app.image_label.config(image="", text="No Image Loaded")
+        app.image_label.image = None
+
+def show_previous_image():
+    """Show the previous image in the captured_frames array."""
+    if app.current_frame_index > 0:
+        app.current_frame_index -= 1
+        load_image_from_index()
+    else:
+        messagebox.showinfo("Info", "No previous image available.")
+
+def show_next_image():
+    """Show the next image in the captured_frames array."""
+    if app.current_frame_index < len(app.captured_frames) - 1:
+        app.current_frame_index += 1
+        load_image_from_index()
+    else:
+        messagebox.showinfo("Info", "No next image available.")
 
 def load_image():
     try:
@@ -533,12 +572,12 @@ def open_input_window():
     app.image_label = tk.Label(image_frame, text="No Image Loaded", bg="gray")
     app.image_label.pack(fill="both", expand=True, padx=10, pady=10)
 
-    # New section for Back and Next buttons
+    # Navigation buttons for Back and Next
     navigation_frame = ttk.Frame(image_frame)
     navigation_frame.pack(fill="x", pady=(5, 0))
 
-    ttk.Button(navigation_frame, text="Back", command=lambda: print("Back button clicked")).pack(side=tk.LEFT, padx=5, pady=5)
-    ttk.Button(navigation_frame, text="Next", command=lambda: print("Next button clicked")).pack(side=tk.RIGHT, padx=5, pady=5)
+    ttk.Button(navigation_frame, text="Back", command=show_previous_image).pack(side=tk.LEFT, padx=5, pady=5)
+    ttk.Button(navigation_frame, text="Next", command=show_next_image).pack(side=tk.RIGHT, padx=5, pady=5)
 
     input_window.mainloop()
 
