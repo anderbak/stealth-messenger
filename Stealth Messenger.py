@@ -636,8 +636,18 @@ def open_input_window():
     # Add radio buttons for Primary and Secondary monitors
     monitor_var = tk.StringVar(value="primary")  # Default to "primary"
 
+    # Check the number of monitors
+    monitors = get_monitors()
+    num_screens = len(monitors)
+
+    # Create the Primary radio button
     ttk.Radiobutton(move_frame, text="Primary", variable=monitor_var, value="primary").grid(row=3, column=0, padx=5, pady=5, sticky="w")
-    ttk.Radiobutton(move_frame, text="Secondary", variable=monitor_var, value="secondary").grid(row=3, column=1, padx=5, pady=5, sticky="w")
+
+    # Create the Secondary radio button and disable it if only one monitor is connected
+    secondary_button = ttk.Radiobutton(move_frame, text="Secondary", variable=monitor_var, value="secondary")
+    secondary_button.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+    if num_screens <= 1:
+        secondary_button.config(state=tk.DISABLED)
 
     settings_button = ttk.Button(controls_frame, text="Settings", command=open_settings_window)
     settings_button.pack(pady=10)
