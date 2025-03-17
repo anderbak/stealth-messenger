@@ -574,10 +574,24 @@ def monitor_connection_listener(callback, poll_interval=1):
                 callback(current_monitors)
             previous_monitor_ids = current_monitor_ids
 
+def update_secondary_button_state():
+    """
+    Updates the state of the 'Secondary' button based on the number of connected monitors.
+    """
+    monitors = get_monitors()
+    num_screens = len(monitors)
+
+    if num_screens > 1:
+        secondary_button.config(state=tk.NORMAL)
+    else:
+        secondary_button.config(state=tk.DISABLED)
+
+# Modify the monitor connection listener callback
 def on_new_monitor_detected(monitors):
     print("New monitor detected!")
     for monitor in monitors:
         print(f"Monitor: {monitor.width}x{monitor.height} at ({monitor.x}, {monitor.y})")
+    update_secondary_button_state()
 
 def open_input_window():
     monitors = get_monitors()
@@ -666,11 +680,13 @@ def open_input_window():
     # Create the Primary radio button
     ttk.Radiobutton(move_frame, text="Primary", variable=monitor_var, value="primary").grid(row=3, column=0, padx=5, pady=5, sticky="w")
 
-    # Create the Secondary radio button and disable it if only one monitor is connected
+    # Create the Secondary radio button
+    global secondary_button
     secondary_button = ttk.Radiobutton(move_frame, text="Secondary", variable=monitor_var, value="secondary")
     secondary_button.grid(row=3, column=1, padx=5, pady=5, sticky="w")
-    if num_screens <= 1:
-        secondary_button.config(state=tk.DISABLED)
+
+    # Update the state of the Secondary button based on the number of monitors
+    update_secondary_button_state()
 
     settings_button = ttk.Button(controls_frame, text="Settings", command=open_settings_window)
     settings_button.pack(pady=10)
