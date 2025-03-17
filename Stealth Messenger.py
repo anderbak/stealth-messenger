@@ -523,7 +523,7 @@ def open_input_window():
     input_window = tk.Tk()
     input_window.title("Stealth Messenger")
     #input_window.geometry("1208x420+200+100")
-    input_window.geometry("1208x820+200+100")
+    input_window.geometry("1208x720+200+100")
     input_window.resizable(False, False)
     #input_window.attributes('-topmost', True)
 
@@ -612,7 +612,7 @@ def open_input_window():
     ttk.Button(navigation_frame, text="Next", command=show_next_image).pack(side=tk.RIGHT, padx=5, pady=5)
     ttk.Button(navigation_frame, text="Rerun", command=rerun_query).pack(side=tk.LEFT, padx=5, pady=5) 
     
-    app.ocr_textbox = tk.Text(image_frame, height=20, wrap="word", font=("Arial", 10))
+    app.ocr_textbox = tk.Text(image_frame, height=10, wrap="word", font=("Arial", 10))
     app.ocr_textbox.pack(fill="x", padx=10, pady=(5, 10))
     app.ocr_textbox.insert("1.0", "No OCR text available.")
 
