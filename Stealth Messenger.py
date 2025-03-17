@@ -80,6 +80,9 @@ def display_message(message):
 
     app.message_window.geometry(f"{message_width}x{message_height}+{app.msg_x}+{app.msg_y}")
     
+    # Update the position label in the input window
+    app.position_label.config(text=f"{app.msg_x}:{app.msg_y}")
+    
     hwnd = ctypes.windll.user32.GetParent(app.message_window.winfo_id())
     style = ctypes.windll.user32.GetWindowLongW(hwnd, -20)
     ctypes.windll.user32.SetWindowLongW(hwnd, -20, style | 0x80000 | 0x20)
