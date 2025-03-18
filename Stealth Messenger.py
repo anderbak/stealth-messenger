@@ -46,6 +46,59 @@ class StealthMessenger:
         self.SAVE_FOLDER = os.path.join(tempfile.gettempdir(), "captured_frames")
         os.makedirs(self.SAVE_FOLDER, exist_ok=True)
 
+        self.stream_process = None  # Track FFmpeg stream process
+
+        # Add Start/Stop Stream buttons
+        self.start_stream_button = tk.Button(controls_frame, text="Start Stream", command=self.start_stream)
+        self.start_stream_button.pack(pady=5)
+
+        self.stop_stream_button = tk.Button(controls_frame, text="Stop Stream", command=self.stop_stream, state=tk.DISABLED)
+        self.stop_stream_button.pack(pady=5)
+
+        # Add a label for displaying the stream
+        self.stream_label = tk.Label(stream_frame, text="Stream Frame", bg="gray")
+        self.stream_label.pack(fill="both", expand=True, padx=10, pady=10)
+
+
+    def start_stream(self):
+        """Starts an FFmpeg stream capturing the application's window."""
+        if self.stream_process:
+            messagebox.showinfo("Info", "Stream is already running.")
+            return
+
+        window_title = "Stealth Messenger"
+        self.stream_process = subprocess.Popen(
+            ["ffmpeg", "-f", "gdigrab", "-i", f"title={window_title}",
+             "-vf", "scale=640:480", "-r", "30", "-f", "mjpeg", "http://localhost:8090/feed.mjpg"],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+
+        self.start_stream_button.config(state=tk.DISABLED)
+        self.stop_stream_button.config(state=tk.NORMAL)
+
+        cap = cv2.VideoCapture("http://localhost:8090/feed.mjpg")
+
+        def update_frame():
+            ret, frame = cap.read()
+            if ret:
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                img = Image.fromarray(frame)
+                img_tk = ImageTk.PhotoImage(image=img)
+                self.stream_label.config(image=img_tk)
+                self.stream_label.image = img_tk
+            self.stream_label.after(10, update_frame)
+
+        update_frame()
+
+    def stop_stream(self):
+        """Stops the FFmpeg stream and resets the UI."""
+        if self.stream_process:
+            self.stream_process.terminate()
+            self.stream_process = None
+
+        self.start_stream_button.config(state=tk.NORMAL)
+        self.stop_stream_button.config(state=tk.DISABLED)
+
 app = StealthMessenger()
 
 def display_message(message):
@@ -692,8 +745,8 @@ def open_input_window():
     move_frame = ttk.LabelFrame(controls_frame, text="Message Window")
     move_frame.pack(pady=5, padx=10, anchor="center")
 
-    stream_frame = ttk.Frame(controls_frame)
-    stream_frame.pack(fill="both", expand=True, padx=2, pady=2)
+#    stream_frame = ttk.Frame(controls_frame)
+#    stream_frame.pack(fill="both", expand=True, padx=2, pady=2)
     
     mode_var = tk.StringVar(value='light')
     ttk.Radiobutton(move_frame, text="Light", variable=mode_var, value='light', command=lambda: set_mode('light')).grid(row=0, column=6, padx=5)
@@ -734,6 +787,19 @@ def open_input_window():
 
     settings_button = ttk.Button(controls_frame, text="Settings", command=open_settings_window)
     settings_button.pack(pady=10)
+
+#    app.stream_label = tk.Label(stream_frame, text="Stream Frame", bg="gray")
+#    app.stream_label.pack(fill="both", expand=True, padx=10, pady=10)
+
+    stream_control_frame = ttk.LabelFrame(controls_frame, text="Stream Controls")
+    stream_control_frame.pack(fill="x", padx=10, pady=10)
+
+    app.start_stream_button = ttk.Button(stream_control_frame, text="Start Stream", command=app.start_stream)
+    app.start_stream_button.pack(side="left", padx=5, pady=5)
+
+    app.stop_stream_button = ttk.Button(stream_control_frame, text="Stop Stream", command=app.stop_stream)
+    app.stop_stream_button.pack(side="left", padx=5, pady=5)
+    app.stop_stream_button.config(state=tk.DISABLED)
 
     app.stream_label = tk.Label(stream_frame, text="Stream Frame", bg="gray")
     app.stream_label.pack(fill="both", expand=True, padx=10, pady=10)
