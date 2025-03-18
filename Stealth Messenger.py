@@ -689,17 +689,12 @@ def open_input_window():
     app.close_message_window_button.pack(side=tk.LEFT, padx=5)
     app.close_message_window_button.state(["disabled"])
 
-    settings_button = ttk.Button(controls_frame, text="Settings", command=open_settings_window)
-    settings_button.pack(pady=10)
-
-    # Add the dummy frame below the settings button
-    dummy_frame = ttk.Frame(controls_frame, height=100, width=200, relief="solid", borderwidth=1)
-    dummy_frame.pack(fill="x", padx=10, pady=10)
-    ttk.Label(dummy_frame, text="Dummy Frame", anchor="center").pack(pady=10)
-
     move_frame = ttk.LabelFrame(controls_frame, text="Message Window")
     move_frame.pack(pady=5, padx=10, anchor="center")
 
+    stream_frame = ttk.Frame(controls_frame)
+    stream_frame.pack(fill="both", expand=True, padx=2, pady=2)
+    
     mode_var = tk.StringVar(value='light')
     ttk.Radiobutton(move_frame, text="Light", variable=mode_var, value='light', command=lambda: set_mode('light')).grid(row=0, column=6, padx=5)
     ttk.Radiobutton(move_frame, text="Dark", variable=mode_var, value='dark', command=lambda: set_mode('dark')).grid(row=1, column=6, padx=5)
@@ -739,6 +734,9 @@ def open_input_window():
 
     settings_button = ttk.Button(controls_frame, text="Settings", command=open_settings_window)
     settings_button.pack(pady=10)
+
+    app.stream_label = tk.Label(stream_frame, text="Stream Frame", bg="gray")
+    app.stream_label.pack(fill="both", expand=True, padx=10, pady=10)
 
     app.image_label = tk.Label(image_frame, text="No Image Loaded", bg="gray")
     app.image_label.pack(fill="both", expand=True, padx=10, pady=10)
